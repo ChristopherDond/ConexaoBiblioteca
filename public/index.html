@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Produtos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #13161e;
+      --border:   #1f2430;
+      --border2:  #2a3045;
+      --text:     #c8cdd8;
+      --dim:      #5a6278;
+      --accent:   #4af0b0;
+      --accent2:  #2dd68c;
+      --danger:   #f05050;
+      --warn:     #f0a050;
+      --info:     #50a0f0;
+      --mono:     'IBM Plex Mono', monospace;
+      --sans:     'IBM Plex Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ---- HEADER ---- */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: .05em;
+    }
+    .logo span { color: var(--dim); }
+    .header-tabs {
+      display: flex;
+      gap: 0;
+    }
+    .tab {
+      background: none;
+      border: none;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 0 20px;
+      height: 56px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ---- LAYOUT ---- */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ---- TOOLBAR ---- */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    /* ---- BUTTONS ---- */
+    .btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 16px;
+      border: 1px solid;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all .15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 500;
+    }
+    .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border2);
+      color: var(--text);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger {
+      background: transparent;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-edit {
+      background: transparent;
+      border-color: var(--border2);
+      color: var(--dim);
+    }
+    .btn-edit:hover { border-color: var(--info); color: var(--info); }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+
+    /* ---- TABLE ---- */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead { background: var(--surface); }
+    th {
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--dim);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .td-mono { font-family: var(--mono); font-size: 13px; }
+    .td-dim { color: var(--dim); font-size: 12px; }
+    .actions { display: flex; gap: 6px; }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+    .badge-insert { color: var(--accent); border-color: rgba(74,240,176,.3); background: rgba(74,240,176,.06); }
+    .badge-update { color: var(--info);   border-color: rgba(80,160,240,.3); background: rgba(80,160,240,.06); }
+    .badge-delete { color: var(--danger); border-color: rgba(240,80,80,.3);  background: rgba(240,80,80,.06);  }
+
+    .empty {
+      text-align: center;
+      padding: 48px;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    /* ---- MODAL ---- */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      width: 440px;
+      padding: 28px;
+    }
+    .modal-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--dim);
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-btn:hover { color: var(--text); }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--dim);
+      margin-bottom: 6px;
+    }
+    .field input, .field select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 3px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field select option { background: var(--bg); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    /* ---- TOAST ---- */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 12px 18px;
+      border-radius: 4px;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .2s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.ok   { border-left: 3px solid var(--accent); }
+    #toast.err  { border-left: 3px solid var(--danger); }
+
+    /* ---- LOADING ---- */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span>//</span> ProdutosEletronicos <span>— Testezin 8</span></div>
+  <div class="header-tabs">
+    <button class="tab active" onclick="showPanel('produtos')">Produtos</button>
+    <button class="tab" onclick="showPanel('logs')">Audit Log</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- PAINEL PRODUTOS -->
+  <div class="panel active" id="panel-produtos">
+    <div class="toolbar">
+      <span class="section-title">Produtos cadastrados</span>
+      <button class="btn btn-primary" onclick="openModal()">+ Novo Produto</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Atualizado em</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-produtos">
+          <tr><td colspan="7" class="empty"><span class="spinner"></span>carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAINEL LOGS -->
+  <div class="panel" id="panel-logs">
+    <div class="toolbar">
+      <span class="section-title">Histórico de alterações (gerado pelos triggers)</span>
+      <button class="btn btn-ghost" onclick="loadLogs()">↻ Atualizar</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Operação</th>
+            <th>Produto</th>
+            <th>Campo</th>
+            <th>Antes</th>
+            <th>Depois</th>
+            <th>Usuário DB</th>
+            <th>Quando</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-logs">
+          <tr><td colspan="7" class="empty">Selecione a aba para carregar</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-title-text">Novo Produto</span>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="field">
+      <label>Nome</label>
+      <input type="text" id="f-nome" placeholder="Ex: Notebook Dell">
+    </div>
+    <div class="field">
+      <label>Categoria</label>
+      <select id="f-categoria">
+        <option value="">Selecione...</option>
+        <option>Periféricos</option>
+        <option>Monitores</option>
+        <option>Armazenamento</option>
+        <option>Processadores</option>
+        <option>Memória</option>
+        <option>Notebooks</option>
+        <option>Outros</option>
+      </select>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Preço (R$)</label>
+        <input type="number" id="f-preco" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Estoque</label>
+        <input type="number" id="f-estoque" placeholder="0" min="0">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-salvar" onclick="salvar()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = '';  // mesmo servidor (Express serve o HTML)
+  let editId = null;
+
+  // ============================================================
+  // NAVEGAÇÃO
+  // ============================================================
+  function showPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'logs') loadLogs();
+    if (name === 'produtos') loadProdutos();
+  }
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+  function toast(msg, tipo = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show ' + tipo;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.className = '', 2800);
+  }
+
+  // ============================================================
+  // PRODUTOS
+  // ============================================================
+  async function loadProdutos() {
+    const tbody = document.getElementById('tbody-produtos');
+    tbody.innerHTML = '<tr><td colspan="7" class="empty"><span class="spinner"></span>carregando...</td></tr>';
+    try {
+      const res = await fetch(`${API}/api/produtos`);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(p => `
+        <tr>
+          <td class="td-mono td-dim">${p.id}</td>
+          <td>${p.nome}</td>
+          <td class="td-dim">${p.categoria}</td>
+          <td class="td-mono">R$ ${parseFloat(p.preco).toFixed(2)}</td>
+          <td class="td-mono">${p.estoque}</td>
+          <td class="td-dim" style="font-size:11px">${fmtDate(p.atualizado_em)}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-edit btn-sm" onclick="openModal(${p.id})">editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deletar(${p.id}, '${escHtml(p.nome)}')">del</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty" style="color:var(--danger)">Erro ao conectar com o servidor.</td></tr>';
+    }
+  }
+
+  // ============================================================
+  // MODAL
+  // ============================================================
+  async function openModal(id = null) {
+    editId = id;
+    document.getElementById('modal-title-text').textContent = id ? `Editar Produto #${id}` : 'Novo Produto';
+    document.getElementById('f-nome').value = '';
+    document.getElementById('f-categoria').value = '';
+    document.getElementById('f-preco').value = '';
+    document.getElementById('f-estoque').value = '';
+
+    if (id) {
+      try {
+        const res = await fetch(`${API}/api/produtos/${id}`);
+        const p = await res.json();
+        document.getElementById('f-nome').value = p.nome;
+        document.getElementById('f-categoria').value = p.categoria;
+        document.getElementById('f-preco').value = p.preco;
+        document.getElementById('f-estoque').value = p.estoque;
+      } catch {
+        toast('Erro ao carregar produto', 'err');
+        return;
+      }
+    }
+    document.getElementById('overlay').classList.add('open');
+    setTimeout(() => document.getElementById('f-nome').focus(), 50);
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    editId = null;
+  }
+
+  async function salvar() {
+    const body = {
+      nome:      document.getElementById('f-nome').value.trim(),
+      categoria: document.getElementById('f-categoria').value,
+      preco:     parseFloat(document.getElementById('f-preco').value),
+      estoque:   parseInt(document.getElementById('f-estoque').value),
+    };
+    if (!body.nome || !body.categoria || isNaN(body.preco) || isNaN(body.estoque)) {
+      toast('Preencha todos os campos', 'err'); return;
+    }
+    const btn = document.getElementById('btn-salvar');
+    btn.disabled = true;
+    try {
+      const url    = editId ? `${API}/api/produtos/${editId}` : `${API}/api/produtos`;
+      const method = editId ? 'PUT' : 'POST';
+      const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.erro); }
+      toast(editId ? 'Produto atualizado ✓' : 'Produto criado ✓');
+      closeModal();
+      loadProdutos();
+    } catch (err) {
+      toast(err.message || 'Erro ao salvar', 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ============================================================
+  // DELETE
+  // ============================================================
+  async function deletar(id, nome) {
+    if (!confirm(`Deletar "${nome}"?`)) return;
+    try {
+      const res = await fetch(`${API}/api/produtos/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      toast(`Produto #${id} deletado`);
+      loadProdutos();
+    } catch {
+      toast('Erro ao deletar', 'err');
+    }
+  }
+
+  // ============================================================
+  // LOGS
+  // ============================================================
+  async function loadLogs() {
+    const tbody = document.getElementById('tbody-logs');
+    tbody.innerHTML = '<tr><td colspan="7" class="empty"><span class="spinner"></span>carregando...</td></tr>';
+    try {
+      const res = await fetch(`${API}/api/logs`);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhuma operação registrada ainda.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(l => `
+        <tr>
+          <td><span class="badge badge-${l.operacao.toLowerCase()}">${l.operacao}</span></td>
+          <td>${l.produto_nome ? escHtml(l.produto_nome) : `<span class="td-dim">#${l.produto_id}</span>`}</td>
+          <td class="td-mono td-dim">${l.campo ?? '—'}</td>
+          <td class="td-mono td-dim" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.valor_antes ?? '—')}</td>
+          <td class="td-mono"        style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.valor_depois ?? '—')}</td>
+          <td class="td-dim" style="font-size:11px">${l.usuario ?? '—'}</td>
+          <td class="td-dim" style="font-size:11px">${fmtDate(l.executado_em)}</td>
+        </tr>
+      `).join('');
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty" style="color:var(--danger)">Erro ao carregar logs.</td></tr>';
+    }
+  }
+
+  // ============================================================
+  // UTILS
+  // ============================================================
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Fechar modal com ESC
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+  // Init
+  loadProdutos();
+</script>
+</body>
+</html>
