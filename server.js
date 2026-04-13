@@ -20,6 +20,17 @@ const dbConfig = {
   port: 1433,
 };
 
+// const dbConfig = {
+//   server:   'maquina diferente',
+//   database: 'CrudDB',
+//   options: {
+//     trustServerCertificate: true,
+//     enableArithAbort: true,
+//     trustedConnection: true,
+//   },
+//   port: 1433,
+// };
+
 let pool;
 async function getPool() {
   if (!pool) pool = await sql.connect(dbConfig);
