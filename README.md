@@ -1,5 +1,7 @@
 # ConexaoBiblioteca
 
+[(versao portugues)](README-pt-br.md)
+
 A simple product management CRUD built with Node.js, Express, and Microsoft SQL Server. The app serves a static frontend from `public/` and exposes a REST API for managing products and viewing audit logs.
 
 ## Features
