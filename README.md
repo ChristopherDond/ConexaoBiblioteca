@@ -4,6 +4,8 @@
 
 ConexaoBiblioteca is a small product management CRUD built with Node.js and Express. It serves a static frontend from `public/` and exposes a REST API for listing, creating, updating, deleting, and auditing products.
 
+This repository was developed as a presentation project at Senac Taboao da Serra.
+
 ## Overview
 
 - Product CRUD with a browser-based interface

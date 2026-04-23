@@ -4,6 +4,8 @@
 
 ConexaoBiblioteca e um CRUD simples de gerenciamento de produtos construido com Node.js e Express. A aplicacao entrega um frontend estatico a partir de `public/` e expoe uma API REST para listar, criar, atualizar, remover e auditar produtos.
 
+Este repositorio foi desenvolvido como um trabalho de apresentacao no Senac Taboao da Serra.
+
 ## Visao Geral
 
 - CRUD de produtos com interface no navegador
