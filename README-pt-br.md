@@ -1,29 +1,35 @@
 # ConexaoBiblioteca
 
-[(english version)](README.md)
+[english version](README.md)
 
-Um CRUD simples de gerenciamento de produtos, construido com Node.js, Express e Microsoft SQL Server. A aplicacao serve um frontend estatico a partir de `public/` e expoe uma API REST para gerenciar produtos e consultar logs de auditoria.
+ConexaoBiblioteca e um CRUD simples de gerenciamento de produtos construido com Node.js e Express. A aplicacao entrega um frontend estatico a partir de `public/` e expoe uma API REST para listar, criar, atualizar, remover e auditar produtos.
 
-## Funcionalidades
+## Visao Geral
 
-- Criar, listar, atualizar e remover produtos
-- Persistencia em SQL Server com o driver `mssql`
-- Log de auditoria gerado por gatilhos (triggers) no banco
-- Frontend estatico servido pelo Express
+- CRUD de produtos com interface no navegador
+- API REST para produtos e logs de auditoria
+- Frontend estatico servido diretamente pelo Express
 - CORS habilitado para desenvolvimento local
+
+## Stack
+
+- Node.js
+- Express
+- MySQL via `mysql2/promise`
+- Frontend em HTML/CSS/JavaScript puro
 
 ## Estrutura do Projeto
 
 - `server.js` - Servidor Express e rotas da API
-- `public/index.html` - Interface frontend
-- `schema.sql` - Schema do banco, triggers e dados de exemplo
+- `public/index.html` - Pagina principal do frontend
+- `schema.sql` - Schema do banco e dados de exemplo
 - `package.json` - Scripts e dependencias do projeto
 
-## Pre-requisitos
+## Requisitos
 
-- Node.js 18+ (recomendado)
-- Microsoft SQL Server
+- Node.js 18 ou superior
 - npm
+- Acesso a um banco MySQL
 
 ## Configuracao
 
@@ -33,49 +39,49 @@ Um CRUD simples de gerenciamento de produtos, construido com Node.js, Express e 
 npm install
 ```
 
-2. Crie o banco e as tabelas:
+2. Ajuste a conexao com o banco:
 
-Execute `schema.sql` no SQL Server Management Studio, Azure Data Studio ou outro cliente SQL conectado a sua instancia SQL Server.
+As credenciais atuais estao definidas diretamente em `server.js`. Atualize host, porta, banco, usuario e senha antes de rodar a aplicacao em outro ambiente.
 
-3. Atualize a conexao com o banco em `server.js`:
+3. Prepare o schema do banco:
 
-A configuracao atual esta em `dbConfig` dentro de `server.js`. Substitua pelos seus dados de host, banco, usuario e senha antes de iniciar a aplicacao.
+O arquivo `schema.sql` inclui as tabelas e os triggers usados pela aplicacao. Revise o script antes de executa-lo no seu ambiente, porque ele pode precisar de ajustes para o dialeto SQL do banco que voce estiver usando.
 
-## Executando a Aplicacao
+## Execucao
 
-Inicie o servidor em modo de producao:
+Inicie o servidor:
 
 ```bash
 npm start
 ```
 
-Ou rode com reinicio automatico durante o desenvolvimento:
+Para desenvolvimento com reinicio automatico:
 
 ```bash
 npm run dev
 ```
 
-Por padrao, o servidor executa em:
+Por padrao, a aplicacao roda em:
 
 ```text
 http://localhost:3000
 ```
 
-## Endpoints da API
+## API
 
 ### Produtos
 
 - `GET /api/produtos` - Lista todos os produtos
 - `GET /api/produtos/:id` - Busca um produto por ID
-- `POST /api/produtos` - Cria um novo produto
-- `PUT /api/produtos/:id` - Atualiza um produto existente
+- `POST /api/produtos` - Cria um produto
+- `PUT /api/produtos/:id` - Atualiza um produto
 - `DELETE /api/produtos/:id` - Remove um produto
 
 ### Logs
 
-- `GET /api/logs` - Lista os registros de auditoria mais recentes
+- `GET /api/logs` - Lista os ultimos logs de auditoria
 
-## Exemplo de Corpo da Requisicao
+## Exemplo de Requisicao
 
 Use este payload para `POST /api/produtos` e `PUT /api/produtos/:id`:
 
@@ -90,18 +96,14 @@ Use este payload para `POST /api/produtos` e `PUT /api/produtos/:id`:
 
 ## Observacoes do Banco
 
-O arquivo `schema.sql` cria:
+- `Produtos` guarda os registros de produtos
+- `Produtos_Log` guarda o historico de auditoria
+- Triggers registram eventos de `INSERT`, `UPDATE` e `DELETE`
 
-- Tabela `Produtos` para os dados de produtos
-- Tabela `Produtos_Log` para historico de auditoria
-- Triggers para `INSERT`, `UPDATE` e `DELETE`
+## Seguranca
 
-O schema tambem insere registros de exemplo para facilitar os testes.
-
-## Nota de Seguranca
-
-As credenciais do banco estao hardcoded em `server.js`. Em producao, mova essas credenciais para variaveis de ambiente antes de publicar ou compartilhar o projeto.
+As credenciais do banco estao hardcoded em `server.js`. Para producao, mova esses dados para variaveis de ambiente ou outro mecanismo de gerenciamento de segredos.
 
 ## Licenca
 
-Ainda nao foi definida uma licenca para este projeto.
+Nenhuma licenca foi definida ainda.

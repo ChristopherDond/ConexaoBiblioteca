@@ -33,7 +33,6 @@
       min-height: 100vh;
     }
 
-    /* ---- HEADER ---- */
     header {
       border-bottom: 1px solid var(--border);
       padding: 0 32px;
@@ -72,7 +71,6 @@
     .tab:hover { color: var(--text); }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-    /* ---- LAYOUT ---- */
     main {
       max-width: 1100px;
       margin: 0 auto;
@@ -81,7 +79,6 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* ---- TOOLBAR ---- */
     .toolbar {
       display: flex;
       justify-content: space-between;
@@ -96,7 +93,6 @@
       letter-spacing: .12em;
     }
 
-    /* ---- BUTTONS ---- */
     .btn {
       font-family: var(--mono);
       font-size: 12px;
@@ -133,7 +129,6 @@
     .btn-edit:hover { border-color: var(--info); color: var(--info); }
     .btn-sm { padding: 5px 10px; font-size: 11px; }
 
-    /* ---- TABLE ---- */
     .table-wrap {
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -185,7 +180,6 @@
       font-size: 12px;
     }
 
-    /* ---- MODAL ---- */
     .overlay {
       display: none;
       position: fixed;
@@ -254,7 +248,6 @@
       margin-top: 24px;
     }
 
-    /* ---- TOAST ---- */
     #toast {
       position: fixed;
       bottom: 24px;
@@ -276,7 +269,6 @@
     #toast.ok   { border-left: 3px solid var(--accent); }
     #toast.err  { border-left: 3px solid var(--danger); }
 
-    /* ---- LOADING ---- */
     .spinner {
       display: inline-block;
       width: 14px;
@@ -303,7 +295,6 @@
 
 <main>
 
-  <!-- PAINEL PRODUTOS -->
   <div class="panel active" id="panel-produtos">
     <div class="toolbar">
       <span class="section-title">Produtos cadastrados</span>
@@ -329,7 +320,6 @@
     </div>
   </div>
 
-  <!-- PAINEL LOGS -->
   <div class="panel" id="panel-logs">
     <div class="toolbar">
       <span class="section-title">Histórico de alterações (gerado pelos triggers)</span>
@@ -357,7 +347,6 @@
 
 </main>
 
-<!-- MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-title">
@@ -401,12 +390,9 @@
 <div id="toast"></div>
 
 <script>
-  const API = '';  // mesmo servidor (Express serve o HTML)
+  const API = '';
   let editId = null;
 
-  // ============================================================
-  // NAVEGAÇÃO
-  // ============================================================
   function showPanel(name) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -416,9 +402,6 @@
     if (name === 'produtos') loadProdutos();
   }
 
-  // ============================================================
-  // TOAST
-  // ============================================================
   function toast(msg, tipo = 'ok') {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -427,9 +410,6 @@
     el._t = setTimeout(() => el.className = '', 2800);
   }
 
-  // ============================================================
-  // PRODUTOS
-  // ============================================================
   async function loadProdutos() {
     const tbody = document.getElementById('tbody-produtos');
     tbody.innerHTML = '<tr><td colspan="7" class="empty"><span class="spinner"></span>carregando...</td></tr>';
@@ -461,9 +441,6 @@
     }
   }
 
-  // ============================================================
-  // MODAL
-  // ============================================================
   async function openModal(id = null) {
     editId = id;
     document.getElementById('modal-title-text').textContent = id ? `Editar Produto #${id}` : 'Novo Produto';
@@ -521,9 +498,6 @@
     }
   }
 
-  // ============================================================
-  // DELETE
-  // ============================================================
   async function deletar(id, nome) {
     if (!confirm(`Deletar "${nome}"?`)) return;
     try {
@@ -536,9 +510,6 @@
     }
   }
 
-  // ============================================================
-  // LOGS
-  // ============================================================
   async function loadLogs() {
     const tbody = document.getElementById('tbody-logs');
     tbody.innerHTML = '<tr><td colspan="7" class="empty"><span class="spinner"></span>carregando...</td></tr>';
@@ -565,9 +536,6 @@
     }
   }
 
-  // ============================================================
-  // UTILS
-  // ============================================================
   function fmtDate(iso) {
     if (!iso) return '—';
     return new Date(iso).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
@@ -576,11 +544,9 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Fechar modal com ESC
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 
-  // Init
   loadProdutos();
 </script>
 </body>
