@@ -9,11 +9,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const pool = mysql.createPool({
-  host:               '',
+  host:               '137.131.242.237',
   port:               3306,
-  database:           '',
-  user:               '',
-  password:           '',
+  database:           'CrudDB',
+  user:               'crud_user',
+  password:           'Senac2026@',
   waitForConnections: true,
   connectionLimit:    10,
   charset:            'utf8mb4',
